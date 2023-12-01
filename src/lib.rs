@@ -2,12 +2,12 @@ extern crate aoc_runner;
 
 #[macro_use]
 extern crate aoc_runner_derive;
+extern crate aoc;
 extern crate regex;
 extern crate statistical;
-extern crate aoc;
 
-pub mod help;
 pub mod day01;
+pub mod help;
 //pub mod day02;
 //pub mod day03;
 //pub mod day04;
@@ -32,4 +32,4 @@ pub mod day01;
 //pub mod day24;
 //pub mod day25;
 
-aoc_lib!{ year = 2023 }
+aoc_lib! { year = 2023 }

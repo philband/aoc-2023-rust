@@ -1,8 +1,8 @@
 extern crate vecmath;
 
-use std::iter::from_fn;
-use std::collections::{HashMap, BTreeMap, HashSet, BinaryHeap, VecDeque};
 use std::cmp::Reverse;
+use std::collections::{BTreeMap, BinaryHeap, HashMap, HashSet, VecDeque};
+use std::iter::from_fn;
 
 pub type Point = self::vecmath::Vector2<i64>;
 pub type FPoint = self::vecmath::Vector2<f64>;
@@ -13,7 +13,6 @@ pub type FVec4 = self::vecmath::Vector4<f64>;
 pub type Mat4 = self::vecmath::Matrix4<i64>;
 pub type FMat4 = self::vecmath::Matrix4<f64>;
 pub type Mat3 = self::vecmath::Matrix3<i64>;
-
 
 pub use self::vecmath::vec2_add as point_add;
 pub use self::vecmath::vec2_dot as point_dot;
@@ -86,9 +85,9 @@ pub fn point_signum(p: Point) -> Point {
 }
 
 pub fn parse_grid<'a, I, J>(lines: I) -> Vec<Vec<char>>
-    where
-        I: IntoIterator<Item = &'a J>,
-        J: AsRef<str> + 'a,
+where
+    I: IntoIterator<Item = &'a J>,
+    J: AsRef<str> + 'a,
 {
     lines
         .into_iter()
@@ -97,9 +96,9 @@ pub fn parse_grid<'a, I, J>(lines: I) -> Vec<Vec<char>>
 }
 
 pub fn parse_grid_to<'a, I, J, T>(lines: I, f: fn(char) -> T) -> Vec<Vec<T>>
-    where
-        I: IntoIterator<Item = &'a J>,
-        J: AsRef<str> + 'a,
+where
+    I: IntoIterator<Item = &'a J>,
+    J: AsRef<str> + 'a,
 {
     lines
         .into_iter()
@@ -108,9 +107,9 @@ pub fn parse_grid_to<'a, I, J, T>(lines: I, f: fn(char) -> T) -> Vec<Vec<T>>
 }
 
 pub fn parse_grid_to_sparse<'a, I, J, T>(lines: I, f: fn(char) -> Option<T>) -> HashMap<Point, T>
-    where
-        I: IntoIterator<Item = &'a J>,
-        J: AsRef<str> + 'a,
+where
+    I: IntoIterator<Item = &'a J>,
+    J: AsRef<str> + 'a,
 {
     let mut grid = HashMap::new();
     for (y, line) in lines.into_iter().enumerate() {
@@ -150,8 +149,8 @@ impl Iterator for GridIteratorHelper {
 }
 
 pub trait Grid<T>
-    where
-        T: PartialEq + Copy,
+where
+    T: PartialEq + Copy,
 {
     fn get_value(&self, pos: Point) -> Option<T>;
     fn set_value(&mut self, pos: Point, value: T);
@@ -160,7 +159,7 @@ pub trait Grid<T>
         let extents = self.extents();
         GridIteratorHelper {
             extents: extents,
-            curr: Some(extents.0)
+            curr: Some(extents.0),
         }
     }
     fn flip_horizontal(&mut self);
@@ -180,10 +179,9 @@ pub trait Grid<T>
     }
 }
 
-
 impl<S: ::std::hash::BuildHasher, T> Grid<T> for HashMap<Point, T, S>
-    where
-        T: Clone + Copy + Default + PartialEq,
+where
+    T: Clone + Copy + Default + PartialEq,
 {
     fn get_value(&self, pos: Point) -> Option<T> {
         self.get(&pos).copied()
@@ -235,8 +233,8 @@ impl<S: ::std::hash::BuildHasher, T> Grid<T> for HashMap<Point, T, S>
 }
 
 impl<T> Grid<T> for BTreeMap<Point, T>
-    where
-        T: Clone + Copy + Default + PartialEq,
+where
+    T: Clone + Copy + Default + PartialEq,
 {
     fn get_value(&self, pos: Point) -> Option<T> {
         self.get(&pos).copied()
@@ -288,20 +286,20 @@ impl<T> Grid<T> for BTreeMap<Point, T>
 }
 
 impl<T> Grid<T> for Vec<Vec<T>>
-    where
-        T: Clone + Copy + Default + PartialEq,
+where
+    T: Clone + Copy + Default + PartialEq,
 {
     fn get_value(&self, pos: Point) -> Option<T> {
         let [x, y] = pos;
         if let Some(line) = self.get(y as usize) {
             if let Some(p) = line.get(x as usize) {
-                return Some(*p)
+                return Some(*p);
             }
         }
         None
     }
 
-    fn set_value(&mut self, pos: Point, value: T){
+    fn set_value(&mut self, pos: Point, value: T) {
         let [x, y] = pos;
         if let Some(line) = self.get_mut(y as usize) {
             if let Some(p) = line.get_mut(x as usize) {
@@ -313,11 +311,11 @@ impl<T> Grid<T> for Vec<Vec<T>>
     fn extents(&self) -> (Point, Point) {
         if !self.is_empty() && !self[0].is_empty() {
             return (
-                [0,0],
-                [(self[0].len()-1) as i64, (self.len()-1) as i64],
+                [0, 0],
+                [(self[0].len() - 1) as i64, (self.len() - 1) as i64],
             );
         }
-        ([0,0],[0,0])
+        ([0, 0], [0, 0])
     }
 
     fn flip_horizontal(&mut self) {
@@ -372,20 +370,24 @@ pub fn manhattan(n: Point, goal: Point) -> i64 {
 }
 
 pub fn manhattan_circumference_plus(p: &Point, manhattan: i64, add: i64) -> Vec<Point> {
-    ((p[1] - manhattan - add)..=(p[1] + manhattan + add)).into_iter().fold(Vec::<Point>::new(), |mut acc, y| {
-        let rest = manhattan - (p[1] - y).abs() + add;
-        acc.push([p[0] - rest, y]);
-        acc.push([p[0] + rest, y]);
-        acc
-    })
+    ((p[1] - manhattan - add)..=(p[1] + manhattan + add))
+        .into_iter()
+        .fold(Vec::<Point>::new(), |mut acc, y| {
+            let rest = manhattan - (p[1] - y).abs() + add;
+            acc.push([p[0] - rest, y]);
+            acc.push([p[0] + rest, y]);
+            acc
+        })
 }
 
 pub fn manhattan_circumference_contains_y(p: &Point, manhattan: i64, y: i64) -> Vec<Point> {
     let rest = manhattan - (p[1] - y).abs();
-    ((p[0] - rest ) ..= (p[0] + rest)).into_iter().fold(Vec::<Point>::new(), |mut acc, x| {
-        acc.push([x, y]);
-        acc
-    })
+    ((p[0] - rest)..=(p[0] + rest))
+        .into_iter()
+        .fold(Vec::<Point>::new(), |mut acc, x| {
+            acc.push([x, y]);
+            acc
+        })
 }
 
 pub fn manhattan_vec3(n: Vec3, goal: Vec3) -> i64 {
@@ -410,8 +412,8 @@ pub fn astar_grid<T>(
     start: Point,
     goal: Point,
 ) -> Option<(i64, Vec<Point>)>
-    where
-        T: PartialEq + Copy,
+where
+    T: PartialEq + Copy,
 {
     let mut frontier = BinaryHeap::new();
     let mut came_from = HashMap::new();
@@ -453,7 +455,6 @@ pub fn astar_grid<T>(
     None
 }
 
-
 pub fn dijkstra_grid<T>(
     grid: &dyn Grid<T>,
     is_node: fn(&Point, &T) -> bool,
@@ -461,8 +462,8 @@ pub fn dijkstra_grid<T>(
     start: Point,
     goal: Point,
 ) -> Option<(i64, Vec<Point>)>
-    where
-        T: PartialEq + Copy,
+where
+    T: PartialEq + Copy,
 {
     let mut frontier = BinaryHeap::new();
     let mut visited: HashSet<Point> = HashSet::new();
@@ -507,8 +508,8 @@ pub fn bfs_grid<T>(
     start: Point,
     goal: Point,
 ) -> Option<Vec<Point>>
-    where
-        T: PartialEq + Copy,
+where
+    T: PartialEq + Copy,
 {
     let mut q = VecDeque::<Point>::new();
     let mut visited: HashSet<Point> = HashSet::new();
@@ -523,7 +524,7 @@ pub fn bfs_grid<T>(
                 curr = came_from[&curr];
                 path.push(curr);
             }
-            return Some(path.into_iter().rev().collect())
+            return Some(path.into_iter().rev().collect());
         }
         let current_val = grid.get_value(current).unwrap();
         for next in neighbors(current) {
