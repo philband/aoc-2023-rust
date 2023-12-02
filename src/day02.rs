@@ -32,7 +32,6 @@ pub fn valid_game(data: &Vec<(i32, i32, i32)>, limit: (i32, i32, i32)) -> bool {
 }
 #[aoc(day2, part1)]
 pub fn part1(input: &Data) -> usize {
-    println!("{:?}", input);
     input
         .iter()
         .enumerate()
