@@ -12,10 +12,7 @@ pub fn part1(input: &str) -> u32 {
     input
         .lines()
         .map(|line| {
-            let digits: Vec<u32> = line
-                .chars()
-                .filter_map(|c| c.to_digit(10))
-                .collect();
+            let digits: Vec<u32> = line.chars().filter_map(|c| c.to_digit(10)).collect();
             digits.first().unwrap() * 10 + digits.last().unwrap()
         })
         .sum()
@@ -26,7 +23,8 @@ pub fn part2(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let mut map = line.chars()
+            let mut map = line
+                .chars()
                 .enumerate()
                 .filter(|(i, c)| c.is_ascii_digit())
                 .fold(HashMap::<usize, usize>::new(), |mut acc, (i, c)| {
