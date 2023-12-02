@@ -1,4 +1,3 @@
-use itertools::Itertools;
 
 type Data = Vec<Vec<(i32, i32, i32)>>;
 
@@ -11,7 +10,7 @@ pub fn generator(input: &str) -> Data {
             cubeinfos
                 .split("; ")
                 .map(|info| {
-                    info.split(", ").fold((0, 0, 0), |mut acc, s| {
+                    info.split(", ").fold((0, 0, 0), |acc, s| {
                         let parts: Vec<&str> = s.split(" ").collect();
                         match parts[1] {
                             "red" => (acc.0 + parts[0].parse::<i32>().unwrap(), acc.1, acc.2),
@@ -35,8 +34,8 @@ pub fn part1(input: &Data) -> usize {
     input
         .iter()
         .enumerate()
-        .filter(|(i, data)| valid_game(data, (12, 13, 14)))
-        .map(|(i, data)| i + 1)
+        .filter(|(_i, data)| valid_game(data, (12, 13, 14)))
+        .map(|(i, _data)| i + 1)
         .sum()
 }
 
@@ -45,7 +44,7 @@ pub fn part2(input: &Data) -> i32 {
     input
         .iter()
         .map(|data| {
-            let min = data.iter().fold((0, 0, 0), |mut acc, d| {
+            let min = data.iter().fold((0, 0, 0), |acc, d| {
                 (
                     i32::max(acc.0, d.0),
                     i32::max(acc.1, d.1),

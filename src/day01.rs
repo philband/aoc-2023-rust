@@ -1,8 +1,6 @@
 use itertools::Itertools;
 use std::collections::HashMap;
 
-type Data = Vec<i32>;
-
 const DIGIT_STRINGS: [&str; 9] = [
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
@@ -26,7 +24,7 @@ pub fn part2(input: &str) -> usize {
             let mut map = line
                 .chars()
                 .enumerate()
-                .filter(|(i, c)| c.is_ascii_digit())
+                .filter(|(_i, c)| c.is_ascii_digit())
                 .fold(HashMap::<usize, usize>::new(), |mut acc, (i, c)| {
                     acc.insert(i, c.to_digit(10).unwrap() as usize);
                     acc
