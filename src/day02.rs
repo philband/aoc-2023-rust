@@ -1,4 +1,3 @@
-
 type Data = Vec<Vec<(i32, i32, i32)>>;
 
 #[aoc_generator(day2)]
