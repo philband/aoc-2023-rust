@@ -1,6 +1,5 @@
 use crate::day03::GridItem::Symbol;
 use crate::help::Point;
-use itertools::Itertools;
 use regex::Regex;
 use std::collections::{HashMap, HashSet};
 
@@ -22,7 +21,7 @@ pub fn generator(input: &str) -> Data {
         for caps in re.captures_iter(line) {
             let m = caps.get(1).unwrap();
             let number = m.as_str().parse::<i32>().unwrap();
-            for x in (m.start()..m.end()) {
+            for x in m.start()..m.end() {
                 grid.insert(
                     Point::from(&(y as i32, x as i32)),
                     GridItem::NumberId(index),
@@ -47,8 +46,8 @@ pub fn part1(input: &Data) -> i32 {
     let (grid, numbers) = input.clone();
     let set = grid
         .iter()
-        .filter(|(p, i)| matches!(i, GridItem::Symbol(_)))
-        .fold(HashSet::<usize>::new(), |mut acc, (p, i)| {
+        .filter(|(_p, i)| matches!(i, GridItem::Symbol(_)))
+        .fold(HashSet::<usize>::new(), |mut acc, (p, _i)| {
             p.neighbors()
                 .iter()
                 .for_each(|p_new| match grid.get(p_new) {
@@ -67,8 +66,8 @@ pub fn part1(input: &Data) -> i32 {
 pub fn part2(input: &Data) -> i32 {
     let (grid, numbers) = input.clone();
     grid.iter()
-        .filter(|(p, i)| matches!(i, GridItem::Symbol('*')))
-        .map(|(p, i)| {
+        .filter(|(_p, i)| matches!(i, GridItem::Symbol('*')))
+        .map(|(p, _i)| {
             let set = p
                 .neighbors()
                 .iter()
