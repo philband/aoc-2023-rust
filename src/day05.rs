@@ -4,18 +4,17 @@ use itertools::Itertools;
 use range_ext::intersect::*;
 
 
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct Translation {
-    destination: i64,
-    source: i64,
-    length: i64
+    source: Range<i64>,
+    diff: i64
 }
 type Data = (Vec<i64>, Vec<Vec<Translation>>);
 
 fn apply_translations(val: &i64, translations: &Vec<Translation>) -> i64 {
     for t in translations {
-        if (t.source..t.source+t.length).contains(val) {
-            return *val+(t.destination-t.source)
+        if t.source.contains(val)  {
+            return *val+(t.diff)
         }
     }
     *val
@@ -30,9 +29,8 @@ pub fn generator(input: &str) -> Data {
         lines.lines().skip(1).map(|line| {
             let parts: Vec<i64> = line.split_whitespace().map(|p| p.parse().unwrap()).collect();
             Translation{
-                destination: parts[0],
-                source: parts[1],
-                length: parts[2]
+                source: parts[1]..parts[1]+parts[2],
+                diff: parts[0]-parts[1]
             }
         }).collect()
     }).collect();
@@ -60,26 +58,24 @@ pub fn part2(input: &Data) -> i64 {
     for op in &operations {
         'seeds: while let Some(mut seeds) = ranges.pop_front() {
             for t in op {
-                let diff = t.destination-t.source;
-                let t_range = t.source..t.source+t.length;
-                match seeds.intersect_ext(&t_range) {
+                match seeds.intersect_ext(&t.source) {
                     IntersectionExt::LessOverlap => {
-                        next_ranges.push_back(t_range.start+diff..seeds.end+diff);
-                        seeds = seeds.start..t_range.start;
+                        next_ranges.push_back(t.source.start+t.diff..seeds.end+t.diff);
+                        seeds = seeds.start..t.source.start;
                     },
                     IntersectionExt::GreaterOverlap => {
-                        next_ranges.push_back(seeds.start+diff..t_range.end+diff);
-                        seeds = t_range.end..seeds.end;
+                        next_ranges.push_back(seeds.start+t.diff..t.source.end+t.diff);
+                        seeds = t.source.end..seeds.end;
                     },
                     IntersectionExt::Within | IntersectionExt::Same => {
-                        next_ranges.push_back(seeds.start+diff..seeds.end+diff);
+                        next_ranges.push_back(seeds.start+t.diff..seeds.end+t.diff);
                         continue 'seeds;
                     },
                     IntersectionExt::Over => {
                         // most complicated case, seeds contains target range, need to split into three parts
-                        next_ranges.push_back(t_range.start+diff..t_range.end+diff);
-                        ranges.push_front(seeds.start..t_range.start);
-                        ranges.push_front(t_range.end..seeds.end);
+                        next_ranges.push_back(t.source.start+t.diff..t.source.end+t.diff);
+                        ranges.push_front(seeds.start..t.source.start);
+                        ranges.push_front(t.source.end..seeds.end);
                         continue 'seeds;
                     }
                     _ => {}
