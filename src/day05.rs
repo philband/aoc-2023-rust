@@ -10,8 +10,6 @@ pub struct Translation {
     source: i64,
     length: i64
 }
-
-
 type Data = (Vec<i64>, Vec<Vec<Translation>>);
 
 fn apply_translations(val: &i64, translations: &Vec<Translation>) -> i64 {
@@ -88,9 +86,11 @@ pub fn part2(input: &Data) -> i64 {
                 };
             }
             if seeds.end > seeds.start {
+                // there is still a part of a seed left, add it unchanged
                 next_ranges.push_back(seeds)
             }
         }
+        // swap
         ranges = next_ranges;
         next_ranges = VecDeque::new();
     }
