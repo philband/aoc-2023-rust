@@ -9,8 +9,14 @@ pub fn generator(input: &str) -> Data {
         .map(|line| {
             let right = line.split(": ").last().unwrap();
             let (winning, own) = right.split_once(" | ").unwrap();
-            let w: HashSet<i32> = winning.split_whitespace().map(|p| p.parse().unwrap()).collect();
-            let o: HashSet<i32> = own.split_whitespace().map(|p| p.parse::<i32>().unwrap()).collect();
+            let w: HashSet<i32> = winning
+                .split_whitespace()
+                .map(|p| p.parse().unwrap())
+                .collect();
+            let o: HashSet<i32> = own
+                .split_whitespace()
+                .map(|p| p.parse::<i32>().unwrap())
+                .collect();
             w.intersection(&o).count()
         })
         .collect()
@@ -18,13 +24,16 @@ pub fn generator(input: &str) -> Data {
 
 #[aoc(day4, part1)]
 pub fn part1(input: &Data) -> i32 {
-    input.iter().map(|count| {
-        let score = match count {
-            0 => 0,
-            n => 2_i32.pow((*n as u32)-1),
-        };
-        score
-    }).sum()
+    input
+        .iter()
+        .map(|count| {
+            let score = match count {
+                0 => 0,
+                n => 2_i32.pow((*n as u32) - 1),
+            };
+            score
+        })
+        .sum()
 }
 
 #[aoc(day4, part2)]
@@ -33,8 +42,8 @@ pub fn part2(input: &Data) -> usize {
     card_counts[0] = 0;
     for (index, c) in input.iter().enumerate() {
         let index = index + 1;
-        for i in index..index+c {
-            card_counts[i+1] += card_counts[index]
+        for i in index..index + c {
+            card_counts[i + 1] += card_counts[index]
         }
     }
     card_counts.iter().sum()

@@ -1,20 +1,19 @@
-use std::collections::VecDeque;
-use std::ops::Range;
 use itertools::Itertools;
 use range_ext::intersect::*;
-
+use std::collections::VecDeque;
+use std::ops::Range;
 
 #[derive(Debug, Clone)]
 pub struct Translation {
     source: Range<i64>,
-    diff: i64
+    diff: i64,
 }
 type Data = (Vec<i64>, Vec<Vec<Translation>>);
 
 fn apply_translations(val: &i64, translations: &Vec<Translation>) -> i64 {
     for t in translations {
-        if t.source.contains(val)  {
-            return *val+(t.diff)
+        if t.source.contains(val) {
+            return *val + (t.diff);
         }
     }
     *val
@@ -23,17 +22,32 @@ fn apply_translations(val: &i64, translations: &Vec<Translation>) -> i64 {
 #[aoc_generator(day5)]
 pub fn generator(input: &str) -> Data {
     let (start, rest) = input.split_once("\n\n").unwrap();
-    let seeds: Vec<i64> = start.strip_prefix("seeds: ").unwrap().split_whitespace().map(|seed| seed.parse().unwrap()).collect();
+    let seeds: Vec<i64> = start
+        .strip_prefix("seeds: ")
+        .unwrap()
+        .split_whitespace()
+        .map(|seed| seed.parse().unwrap())
+        .collect();
 
-    let translations = rest.split("\n\n").map(|lines| {
-        lines.lines().skip(1).map(|line| {
-            let parts: Vec<i64> = line.split_whitespace().map(|p| p.parse().unwrap()).collect();
-            Translation{
-                source: parts[1]..parts[1]+parts[2],
-                diff: parts[0]-parts[1]
-            }
-        }).collect()
-    }).collect();
+    let translations = rest
+        .split("\n\n")
+        .map(|lines| {
+            lines
+                .lines()
+                .skip(1)
+                .map(|line| {
+                    let parts: Vec<i64> = line
+                        .split_whitespace()
+                        .map(|p| p.parse().unwrap())
+                        .collect();
+                    Translation {
+                        source: parts[1]..parts[1] + parts[2],
+                        diff: parts[0] - parts[1],
+                    }
+                })
+                .collect()
+        })
+        .collect();
 
     (seeds, translations)
 }
@@ -52,7 +66,11 @@ pub fn part1(input: &Data) -> i64 {
 #[aoc(day5, part2)]
 pub fn part2(input: &Data) -> i64 {
     let (seeds_initial, operations) = input;
-    let mut ranges: VecDeque<Range<i64>> = seeds_initial.into_iter().tuples().map(|(&a, &b)| a..a+b).collect();
+    let mut ranges: VecDeque<Range<i64>> = seeds_initial
+        .into_iter()
+        .tuples()
+        .map(|(&a, &b)| a..a + b)
+        .collect();
     let mut next_ranges: VecDeque<Range<i64>> = VecDeque::new();
 
     for op in operations {
@@ -60,20 +78,20 @@ pub fn part2(input: &Data) -> i64 {
             for t in op {
                 match seeds.intersect_ext(&t.source) {
                     IntersectionExt::LessOverlap => {
-                        next_ranges.push_back(t.source.start+t.diff..seeds.end+t.diff);
+                        next_ranges.push_back(t.source.start + t.diff..seeds.end + t.diff);
                         seeds = seeds.start..t.source.start;
-                    },
+                    }
                     IntersectionExt::GreaterOverlap => {
-                        next_ranges.push_back(seeds.start+t.diff..t.source.end+t.diff);
+                        next_ranges.push_back(seeds.start + t.diff..t.source.end + t.diff);
                         seeds = t.source.end..seeds.end;
-                    },
+                    }
                     IntersectionExt::Within | IntersectionExt::Same => {
-                        next_ranges.push_back(seeds.start+t.diff..seeds.end+t.diff);
+                        next_ranges.push_back(seeds.start + t.diff..seeds.end + t.diff);
                         continue 'seeds;
-                    },
+                    }
                     IntersectionExt::Over => {
                         // most complicated case, seeds contains target range, need to split into three parts
-                        next_ranges.push_back(t.source.start+t.diff..t.source.end+t.diff);
+                        next_ranges.push_back(t.source.start + t.diff..t.source.end + t.diff);
                         ranges.push_front(seeds.start..t.source.start);
                         ranges.push_front(t.source.end..seeds.end);
                         continue 'seeds;
