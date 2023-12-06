@@ -51,11 +51,11 @@ pub fn part1(input: &Data) -> i64 {
 
 #[aoc(day5, part2)]
 pub fn part2(input: &Data) -> i64 {
-    let (seeds_initial, operations) = input.clone();
-    let mut ranges: VecDeque<Range<i64>> = seeds_initial.into_iter().tuples().map(|(a, b)| a..a+b).collect();
+    let (seeds_initial, operations) = input;
+    let mut ranges: VecDeque<Range<i64>> = seeds_initial.into_iter().tuples().map(|(&a, &b)| a..a+b).collect();
     let mut next_ranges: VecDeque<Range<i64>> = VecDeque::new();
 
-    for op in &operations {
+    for op in operations {
         'seeds: while let Some(mut seeds) = ranges.pop_front() {
             for t in op {
                 match seeds.intersect_ext(&t.source) {
