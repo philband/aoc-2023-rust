@@ -131,20 +131,28 @@ impl std::str::FromStr for JokerHand {
 impl std::fmt::Display for JokerCard {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let v = &(self.value + 1).to_string();
-        write!(f, "{}", match self.value {
-            0 => "J",
-            12 => "A",
-            11 => "K",
-            10 => "Q",
-            9 => "T",
-            _ => v,
-        })
+        write!(
+            f,
+            "{}",
+            match self.value {
+                0 => "J",
+                12 => "A",
+                11 => "K",
+                10 => "Q",
+                9 => "T",
+                _ => v,
+            }
+        )
     }
 }
 
 impl std::fmt::Display for JokerHand {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}{}{}{}{} {:?}", self.cards[0], self.cards[1], self.cards[2], self.cards[3], self.cards[4], self.rank)
+        write!(
+            f,
+            "{}{}{}{}{} {:?}",
+            self.cards[0], self.cards[1], self.cards[2], self.cards[3], self.cards[4], self.rank
+        )
     }
 }
 
@@ -175,7 +183,7 @@ impl JokerHand {
                     (2, 1) => OnePair,
                     _ => HighCard,
                 },
-            }
+            },
             // 1 joker, 4 others
             1 => match (same_card_counts[0], same_card_counts[1]) {
                 (4, _) => FiveOfAKind,
@@ -196,10 +204,10 @@ impl JokerHand {
             3 => match same_card_counts.len() {
                 2 => FiveOfAKind,
                 3 => FourOfAKind,
-                _ => unreachable!()
+                _ => unreachable!(),
             },
             4 => FiveOfAKind,
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 }
@@ -236,7 +244,6 @@ pub fn part2(input: &str) -> usize {
         .enumerate()
         .map(|(n, (_h, b))| b * (n + 1))
         .sum()
-
 }
 #[cfg(test)]
 mod tests {
@@ -357,26 +364,63 @@ JJJJ2 41";
             true
         );
 
-        for x in ["JJJJJ","AAAAA","JAAAA","AJAAA","AAJAA","AAAJA","AAAAJ"] {
+        for x in [
+            "JJJJJ", "AAAAA", "JAAAA", "AJAAA", "AAJAA", "AAAJA", "AAAAJ",
+        ] {
             assert_eq!(x.parse::<JokerHand>().unwrap().rank, FiveOfAKind)
         }
-        for x in ["AA8AA","TTTT8","JTTT8","TJTT8","TTJT8","TTTJ8","TTT8J","T55J5","KTJJT","QQQJA","QJJQ2","JJQJ4","JJ2J9","JTJ55"] {
+        for x in [
+            "AA8AA", "TTTT8", "JTTT8", "TJTT8", "TTJT8", "TTTJ8", "TTT8J", "T55J5", "KTJJT",
+            "QQQJA", "QJJQ2", "JJQJ4", "JJ2J9", "JTJ55",
+        ] {
             assert_eq!(x.parse::<JokerHand>().unwrap().rank, FourOfAKind)
         }
-        for x in ["23332","J2233","2J233","22J33","223J3","2233J","22333","25J52"] {
+        for x in [
+            "23332", "J2233", "2J233", "22J33", "223J3", "2233J", "22333", "25J52",
+        ] {
             assert_eq!(x.parse::<JokerHand>().unwrap().rank, FullHouse)
         }
-        for x in ["AJKJ4","TTT98","JTT98","TJT98","TTJ98","TT9J8","TT98J","T9T8J","T98TJ","T98JT","TQJQ8"] {
+        for x in [
+            "AJKJ4", "TTT98", "JTT98", "TJT98", "TTJ98", "TT9J8", "TT98J", "T9T8J", "T98TJ",
+            "T98JT", "TQJQ8",
+        ] {
             assert_eq!(x.parse::<JokerHand>().unwrap().rank, ThreeOfAKind)
         }
-        for x in ["23432","KK677","KK677"] {
+        for x in ["23432", "KK677", "KK677"] {
             assert_eq!(x.parse::<JokerHand>().unwrap().rank, TwoPairs)
         }
-        for x in ["32T3K","A23A4","32T3K","J2345","2J345","23J45","234J5","2345J","5TK4J"] {
+        for x in [
+            "32T3K", "A23A4", "32T3K", "J2345", "2J345", "23J45", "234J5", "2345J", "5TK4J",
+        ] {
             assert_eq!(x.parse::<JokerHand>().unwrap().rank, OnePair)
         }
-        for (a, b) in [("QQQQ2", "JKKK2"),("QQQJA", "T55J5"),("KTJJT", "QQQJA"),("KTJJT", "T55J5"),("AAAAA", "JJJJJ"),("AAAAA", "JAAAA"),("KKKKK", "JAAAA"),("JAAAA", "JKKKK"),("JAAA2", "JKKK2"),("JAA22", "JKK22"),("AA22J", "JKK22"),("2233J", "223J3"),("2233J", "223J4"),("2234J", "223J4"),("JJJJJ", "AAAJ2"),("AAAJ2", "AA22J"),("AA22J", "A232J"),("A232J", "AJ233"),("AJ233", "A234J"),("A234J", "A2345"),("QJJQ3", "QJJQ2")] {
-            assert_eq!(a.parse::<JokerHand>().unwrap() > b.parse::<JokerHand>().unwrap(), true)
+        for (a, b) in [
+            ("QQQQ2", "JKKK2"),
+            ("QQQJA", "T55J5"),
+            ("KTJJT", "QQQJA"),
+            ("KTJJT", "T55J5"),
+            ("AAAAA", "JJJJJ"),
+            ("AAAAA", "JAAAA"),
+            ("KKKKK", "JAAAA"),
+            ("JAAAA", "JKKKK"),
+            ("JAAA2", "JKKK2"),
+            ("JAA22", "JKK22"),
+            ("AA22J", "JKK22"),
+            ("2233J", "223J3"),
+            ("2233J", "223J4"),
+            ("2234J", "223J4"),
+            ("JJJJJ", "AAAJ2"),
+            ("AAAJ2", "AA22J"),
+            ("AA22J", "A232J"),
+            ("A232J", "AJ233"),
+            ("AJ233", "A234J"),
+            ("A234J", "A2345"),
+            ("QJJQ3", "QJJQ2"),
+        ] {
+            assert_eq!(
+                a.parse::<JokerHand>().unwrap() > b.parse::<JokerHand>().unwrap(),
+                true
+            )
         }
     }
 
