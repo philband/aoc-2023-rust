@@ -1,4 +1,3 @@
-use itermore::IterSorted;
 use regex::Regex;
 use std::collections::HashMap;
 
@@ -84,10 +83,12 @@ pub fn part2(input: &Data) -> SolutionType {
         .fold(1, |acc, v| num::integer::lcm(acc, v))
 }
 
+#[allow(dead_code)]
 fn lcm(x: SolutionType, y: SolutionType) -> SolutionType {
     (x * y) / gcd(x, y)
 }
 
+#[allow(dead_code)]
 fn gcd(x: SolutionType, y: SolutionType) -> SolutionType {
     if x < y {
         gcd_recurse(x, y)
@@ -96,6 +97,7 @@ fn gcd(x: SolutionType, y: SolutionType) -> SolutionType {
     }
 }
 
+#[allow(dead_code)]
 fn gcd_recurse(min: SolutionType, max: SolutionType) -> SolutionType {
     if min == 0 {
         max
