@@ -1,13 +1,12 @@
-use std::collections::HashSet;
 use aoc::*;
 use itertools::Itertools;
-
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Cosmos {
     data: HashSet<Point>,
     dim_x: i64,
-    dim_y: i64
+    dim_y: i64,
 }
 
 type Data = Cosmos;
@@ -34,7 +33,7 @@ impl Cosmos {
             let new_y = y + (expand_y.iter().filter(|&a| y >= a).count() as i64 * scale);
             updated.insert([new_x, new_y]);
         }
-        Cosmos{
+        Cosmos {
             data: updated,
             dim_x: self.dim_x + (expand_x.len() as i64 * scale),
             dim_y: self.dim_y + (expand_y.len() as i64 * scale),
@@ -42,22 +41,31 @@ impl Cosmos {
     }
 
     fn solve(&self) -> SolutionType {
-        self.data.iter().combinations(2).map(|g| manhattan(*g[0], *g[1])).sum()
+        self.data
+            .iter()
+            .combinations(2)
+            .map(|g| manhattan(*g[0], *g[1]))
+            .sum()
     }
 }
 
 #[aoc_generator(day11)]
 pub fn generator(input: &str) -> Data {
-    let data = input.lines().enumerate().fold(HashSet::<Point>::new(), |mut acc, (y, line)| {
-        for (x, c) in line.chars().enumerate() {
-            match c {
-                '#' => { acc.insert([x as i64, y as i64]); },
-                _ => {}
+    let data = input
+        .lines()
+        .enumerate()
+        .fold(HashSet::<Point>::new(), |mut acc, (y, line)| {
+            for (x, c) in line.chars().enumerate() {
+                match c {
+                    '#' => {
+                        acc.insert([x as i64, y as i64]);
+                    }
+                    _ => {}
+                }
             }
-        }
-        acc
-    });
-    Cosmos{
+            acc
+        });
+    Cosmos {
         data: data.clone(),
         dim_x: input.lines().nth(0).unwrap().chars().count() as i64,
         dim_y: input.lines().count() as i64,
@@ -69,12 +77,10 @@ pub fn part1(input: &Data) -> SolutionType {
     input.expand(2).solve()
 }
 
-
 #[aoc(day11, part2)]
 pub fn part2(input: &Data) -> SolutionType {
     input.expand(1000000).solve()
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -90,7 +96,6 @@ mod tests {
 ..........
 .......#..
 #...#.....";
-
 
     #[test]
     pub fn test1() {

@@ -7,7 +7,9 @@ pub fn generator(input: &str) -> Data {
     input
         .lines()
         .map(|line| {
-            line.split_whitespace().map(|num| num.parse().unwrap()).collect()
+            line.split_whitespace()
+                .map(|num| num.parse().unwrap())
+                .collect()
         })
         .collect()
 }

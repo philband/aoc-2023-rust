@@ -1,14 +1,21 @@
-use std::collections::HashMap;
 use itertools::Itertools;
 use rayon::iter::*;
+use std::collections::HashMap;
 
 type Data = Vec<(String, Vec<usize>)>;
 type SolutionType = usize;
 
-pub fn solve(cache: &mut HashMap::<(usize, usize, usize), usize>, springs: &[u8], blocks: &[usize], i: usize, bi: usize, current: usize) -> usize {
+pub fn solve(
+    cache: &mut HashMap<(usize, usize, usize), usize>,
+    springs: &[u8],
+    blocks: &[usize],
+    i: usize,
+    bi: usize,
+    current: usize,
+) -> usize {
     let key = (i, bi, current);
     if let Some(x) = cache.get(&key) {
-        return *x
+        return *x;
     }
     if i == springs.len() {
         return if bi == blocks.len() && current == 0 {
@@ -17,7 +24,7 @@ pub fn solve(cache: &mut HashMap::<(usize, usize, usize), usize>, springs: &[u8]
             1
         } else {
             0
-        }
+        };
     }
     let mut ans = 0;
     for c in [b'.', b'#'] {
@@ -27,14 +34,13 @@ pub fn solve(cache: &mut HashMap::<(usize, usize, usize), usize>, springs: &[u8]
             } else if c == b'.' && current > 0 && bi < blocks.len() && blocks[bi] == current {
                 ans += solve(cache, springs, blocks, i + 1, bi + 1, 0);
             } else if c == b'#' {
-                ans += solve(cache, springs, blocks, i +1, bi, current + 1);
+                ans += solve(cache, springs, blocks, i + 1, bi, current + 1);
             }
         }
     }
     cache.insert(key, ans);
     ans
 }
-
 
 #[aoc_generator(day12)]
 pub fn generator(input: &str) -> Data {
@@ -52,23 +58,39 @@ pub fn generator(input: &str) -> Data {
 
 #[aoc(day12, part1)]
 pub fn part1(input: &Data) -> SolutionType {
-    input.par_iter().map(|(springs, blocks)| {
-        solve(&mut HashMap::new(), springs.as_bytes(), blocks.as_slice(), 0, 0, 0)
-    })
+    input
+        .par_iter()
+        .map(|(springs, blocks)| {
+            solve(
+                &mut HashMap::new(),
+                springs.as_bytes(),
+                blocks.as_slice(),
+                0,
+                0,
+                0,
+            )
+        })
         .sum()
 }
-
 
 #[aoc(day12, part2)]
 pub fn part2(input: &Data) -> SolutionType {
-    input.par_iter().map(|(springs, blocks)| {
-        let new_springs = (0..5).map(|_| springs).join("?");
-        let new_blocks = (0..5).flat_map(|_| blocks).copied().collect::<Vec<_>>();
-        solve(&mut HashMap::new(), new_springs.as_bytes(), new_blocks.as_slice(), 0, 0, 0)
-    })
+    input
+        .par_iter()
+        .map(|(springs, blocks)| {
+            let new_springs = (0..5).map(|_| springs).join("?");
+            let new_blocks = (0..5).flat_map(|_| blocks).copied().collect::<Vec<_>>();
+            solve(
+                &mut HashMap::new(),
+                new_springs.as_bytes(),
+                new_blocks.as_slice(),
+                0,
+                0,
+                0,
+            )
+        })
         .sum()
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -80,7 +102,6 @@ mod tests {
 ????.#...#... 4,1,1
 ????.######..#####. 1,6,5
 ?###???????? 3,2,1";
-
 
     #[test]
     pub fn test1() {

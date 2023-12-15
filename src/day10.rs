@@ -1,13 +1,13 @@
-use std::collections::{HashMap, VecDeque};
-use std::fmt::Formatter;
+use crate::day10::Instruction::*;
 use aoc::*;
 use itertools::Itertools;
-use crate::day10::Instruction::*;
+use std::collections::{HashMap, VecDeque};
+use std::fmt::Formatter;
 
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub enum Instruction {
     Start,
-    Pipe(Point, Point)
+    Pipe(Point, Point),
 }
 
 type Data = HashMap<Point, Instruction>;
@@ -21,29 +21,33 @@ fn parse_helper(c: char) -> Option<Instruction> {
         '7' => Some(Pipe(NORTH, WEST)),
         'F' => Some(Pipe(NORTH, EAST)),
         'S' => Some(Start),
-        _ => None
+        _ => None,
     }
 }
 
 impl std::fmt::Display for Instruction {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            Pipe(NORTH, SOUTH) => '|',
-            Pipe(EAST, WEST) => '-',
-            Pipe(SOUTH, EAST) => 'L',
-            Pipe(SOUTH, WEST) => 'J',
-            Pipe(NORTH, WEST) => '7',
-            Pipe(NORTH, EAST) => 'F',
-            Start => 'S',
-            _ => '.',
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                Pipe(NORTH, SOUTH) => '|',
+                Pipe(EAST, WEST) => '-',
+                Pipe(SOUTH, EAST) => 'L',
+                Pipe(SOUTH, WEST) => 'J',
+                Pipe(NORTH, WEST) => '7',
+                Pipe(NORTH, EAST) => 'F',
+                Start => 'S',
+                _ => '.',
+            }
+        )
     }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Maze {
     data: Data,
-    history: VecDeque::<Point>,
+    history: VecDeque<Point>,
     current: Point,
     start: Point,
     dim_x: i64,
@@ -55,7 +59,7 @@ impl Maze {
         let mut history = VecDeque::new();
         let start = *data.iter().find(|(_p, &i)| i == Start).unwrap().0;
         history.push_back(start);
-        Maze{
+        Maze {
             data: data.clone(),
             history,
             current: start,
@@ -73,8 +77,12 @@ impl Maze {
                     print!("X");
                 } else if filter(self, [x, y]) {
                     match self.data.get(&[x, y]) {
-                        Some(x) => { print!("{}", x); },
-                        _ => { print!("."); }
+                        Some(x) => {
+                            print!("{}", x);
+                        }
+                        _ => {
+                            print!(".");
+                        }
                     }
                 } else {
                     print!(".");
@@ -93,10 +101,8 @@ impl Maze {
 
     fn is_connected_to(&self, start: Point, dest: Point) -> bool {
         match self.data.get(&start) {
-            Some(Pipe(a, b)) => {
-                [a, b].iter().map(|&&d| point_add(start, d)).contains(&dest)
-            },
-            _ => false
+            Some(Pipe(a, b)) => [a, b].iter().map(|&&d| point_add(start, d)).contains(&dest),
+            _ => false,
         }
     }
 
@@ -107,9 +113,11 @@ impl Maze {
             for x in 0..=self.dim_x {
                 if self.history.contains(&[x, y]) {
                     match self.data.get(&[x, y]) {
-                        Some(Pipe(NORTH, SOUTH)) | Some(Pipe(SOUTH, EAST)) | Some(Pipe(SOUTH, WEST)) => {
-                            inside = ! inside;
-                        },
+                        Some(Pipe(NORTH, SOUTH))
+                        | Some(Pipe(SOUTH, EAST))
+                        | Some(Pipe(SOUTH, WEST)) => {
+                            inside = !inside;
+                        }
                         _ => {}
                     }
                 } else if inside {
@@ -121,25 +129,31 @@ impl Maze {
     }
 
     fn solve(&mut self) -> usize {
-        let possible_starts = neighbors(self.current).filter(|p| self.is_connected_to(*p, self.current)).collect::<Vec<Point>>();
+        let possible_starts = neighbors(self.current)
+            .filter(|p| self.is_connected_to(*p, self.current))
+            .collect::<Vec<Point>>();
         let start = self.data.get_mut(&self.start).unwrap();
-        *start = Instruction::Pipe(point_sub(possible_starts[0], self.start), point_sub(possible_starts[1], self.start));
+        *start = Instruction::Pipe(
+            point_sub(possible_starts[0], self.start),
+            point_sub(possible_starts[1], self.start),
+        );
         self.history.push_back(possible_starts[0]);
         self.current = possible_starts[0];
         while self.current != self.start {
             self.current = match self.data.get(&self.current) {
-                Some(Pipe(a, b)) => {
-                    [a, b]
-                        .iter()
-                        .map(|&&d| point_add(self.current, d))
-                        .filter(|p| ! self.history.contains(p) || (self.history.len() > 2 && self.start == *p))
-                        .nth(0).unwrap()
-                },
-                _ => unreachable!()
+                Some(Pipe(a, b)) => [a, b]
+                    .iter()
+                    .map(|&&d| point_add(self.current, d))
+                    .filter(|p| {
+                        !self.history.contains(p) || (self.history.len() > 2 && self.start == *p)
+                    })
+                    .nth(0)
+                    .unwrap(),
+                _ => unreachable!(),
             };
             self.history.push_back(self.current);
         }
-        return (self.history.len() - 1) / 2
+        return (self.history.len() - 1) / 2;
     }
 }
 
@@ -154,7 +168,6 @@ pub fn part1(input: &Data) -> usize {
     maze.solve()
 }
 
-
 #[aoc(day10, part2)]
 pub fn part2(input: &Data) -> usize {
     let mut maze = Maze::new(input);
@@ -162,7 +175,6 @@ pub fn part2(input: &Data) -> usize {
     //maze.print(Maze::print_filter_visited);
     maze.get_enclosed()
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -201,7 +213,7 @@ L--J.L7...LJS7F-7L7.
 ....FJL-7.||.||||...
 ....L---J.LJ.LJLJ...";
 
-    const SAMPLE5: &str =  "FF7FSF7F7F7F7F7F---7
+    const SAMPLE5: &str = "FF7FSF7F7F7F7F7F---7
 L|LJ||||||||||||F--J
 FL-7LJLJ||||||LJL-77
 F--JF--7||LJLJ7F7FJ-
