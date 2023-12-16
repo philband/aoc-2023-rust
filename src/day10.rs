@@ -16,10 +16,10 @@ fn parse_helper(c: char) -> Option<Instruction> {
     match c {
         '|' => Some(Pipe(NORTH, SOUTH)),
         '-' => Some(Pipe(EAST, WEST)),
-        'L' => Some(Pipe(SOUTH, EAST)),
-        'J' => Some(Pipe(SOUTH, WEST)),
-        '7' => Some(Pipe(NORTH, WEST)),
-        'F' => Some(Pipe(NORTH, EAST)),
+        'L' => Some(Pipe(NORTH, EAST)),
+        'J' => Some(Pipe(NORTH, WEST)),
+        '7' => Some(Pipe(SOUTH, WEST)),
+        'F' => Some(Pipe(SOUTH, EAST)),
         'S' => Some(Start),
         _ => None,
     }
@@ -33,10 +33,10 @@ impl std::fmt::Display for Instruction {
             match self {
                 Pipe(NORTH, SOUTH) => '|',
                 Pipe(EAST, WEST) => '-',
-                Pipe(SOUTH, EAST) => 'L',
-                Pipe(SOUTH, WEST) => 'J',
-                Pipe(NORTH, WEST) => '7',
-                Pipe(NORTH, EAST) => 'F',
+                Pipe(NORTH, EAST) => 'L',
+                Pipe(NORTH, WEST) => 'J',
+                Pipe(SOUTH, WEST) => '7',
+                Pipe(SOUTH, EAST) => 'F',
                 Start => 'S',
                 _ => '.',
             }
@@ -114,8 +114,8 @@ impl Maze {
                 if self.history.contains(&[x, y]) {
                     match self.data.get(&[x, y]) {
                         Some(Pipe(NORTH, SOUTH))
-                        | Some(Pipe(SOUTH, EAST))
-                        | Some(Pipe(SOUTH, WEST)) => {
+                        | Some(Pipe(NORTH, EAST))
+                        | Some(Pipe(NORTH, WEST)) => {
                             inside = !inside;
                         }
                         _ => {}

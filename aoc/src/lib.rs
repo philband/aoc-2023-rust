@@ -26,7 +26,7 @@ pub use self::vecmath::vec3_cross as vec_cross;
 pub use self::vecmath::vec3_dot as vec_dot;
 pub use self::vecmath::vec3_neg as vec_neg;
 
-pub const NORTH: Point = [0, 1];
+pub const SOUTH: Point = [0, 1];
 pub const UP: Point = NORTH;
 pub const NORTH_EAST: Point = [1, 1];
 pub const UP_RIGHT: Point = NORTH_EAST;
@@ -34,7 +34,7 @@ pub const EAST: Point = [1, 0];
 pub const RIGHT: Point = EAST;
 pub const SOUTH_EAST: Point = [1, -1];
 pub const DOWN_RIGHT: Point = SOUTH_EAST;
-pub const SOUTH: Point = [0, -1];
+pub const NORTH: Point = [0, -1];
 pub const DOWN: Point = SOUTH;
 pub const SOUTH_WEST: Point = [-1, -1];
 pub const DOWN_LEFT: Point = SOUTH_WEST;
@@ -541,4 +541,47 @@ where
         }
     }
     None
+}
+
+pub trait SliceExt<T> {
+    fn partialy_reflects_at(&self, idx: usize) -> bool;
+}
+
+impl<T: PartialEq> SliceExt<T> for [T] {
+    fn partialy_reflects_at(&self, idx: usize) -> bool {
+        let dist = (self.len() - idx).min(idx);
+
+        for i in 0..dist {
+            if self[idx - i - 1] != self[idx + i] {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+use itertools::Itertools;
+
+pub trait IteratorExt<Item> {
+    fn duplicate_positions(self) -> Vec<usize>;
+}
+
+impl<Item, Iter: Iterator<Item = Item>> IteratorExt<Item> for Iter
+    where
+        Item: PartialEq + Clone,
+{
+    fn duplicate_positions(self) -> Vec<usize> {
+        let mut reflections = vec![];
+
+        self.enumerate()
+            .tuple_windows()
+            .for_each(|((_, prev), (curr_idx, curr))| {
+                if prev == curr {
+                    reflections.push(curr_idx);
+                }
+            });
+
+        reflections
+    }
 }

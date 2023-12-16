@@ -29,7 +29,6 @@ impl std::fmt::Display for SpaceElement {
             match self {
                 Round => 'O',
                 Cube => '#',
-                _ => '.',
             }
         )
     }

@@ -1,16 +1,12 @@
-use crate::day14::SpaceElement::*;
 use crate::day15::Op::*;
-use aoc::*;
 use itertools::Itertools;
-use std::collections::{VecDeque};
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Op {
     Remove,
     ReplaceInsert,
 }
-
-type Instruction = (Op, Lens);
 
 type Lens = (Vec<char>, usize);
 
