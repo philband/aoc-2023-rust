@@ -585,3 +585,14 @@ impl<Item, Iter: Iterator<Item = Item>> IteratorExt<Item> for Iter
         reflections
     }
 }
+
+pub trait UnsignedExt {
+    /** https://en.wikipedia.org/wiki/Hamming_distance */
+    fn hamming_distance(&self, other: &Self) -> usize;
+}
+
+impl UnsignedExt for usize {
+    fn hamming_distance(&self, other: &Self) -> usize {
+        (self ^ other).count_ones() as usize
+    }
+}
