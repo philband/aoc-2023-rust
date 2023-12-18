@@ -1,7 +1,7 @@
 use crate::day07::Rank::{
     FiveOfAKind, FourOfAKind, FullHouse, HighCard, OnePair, ThreeOfAKind, TwoPairs,
 };
-use itermore::IterSorted;
+use itertools::Itertools;
 use std::collections::HashMap;
 use std::fmt::Formatter;
 
